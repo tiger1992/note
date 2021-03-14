@@ -1,0 +1,40 @@
+
+Linux JKM-BETAQH-102 3.10.0-514.21.1.el7.x86_64 #1 SMP Thu May 25 17:04:51 UTC 2017 x86_64 x86_64 x86_64 GNU/Linux
+
+a)IP:121.201.68.220   Port:6633
+
+b)登录成功以后 输入P 显示所有的服务器IP，再选择2，是当前正在使用服务器
+
+c)sail-app-api目录：cd /apps/dat/javadat/app
+
+d)sail-mgmt-api目录：cd /apps/dat/javadat/mgmt
+
+e)发布步骤：（已后台为例）
+
+a)进入mgmt目录：cd /apps/dat/javadat/mgmt.
+
+b)查看进程：(找到对应的pid号):ps -ef|grep java
+
+c)关掉对应的进程：kill -9 <pid>
+
+d)上传jar包：rz –y <对应项目的jar包>
+
+e) 启动对应的项目：nohup java -Dloader.path=../sail-lib/ -jar sail-mgmt-api.jar&（注意：必须要有 &,后台启动）
+
+f) 滚动查看对应的日志：tail –f nohup.out
+
+#下载日志
+   1、cd /apps/logs/app【app日志】
+   2、sz sail-app-api.log
+
+#ctrl + z 退回到上层操作
+
+app地址：http://dev-apisail.healthmall.cn  -->测试服
+		 http://pre-apisail.healthmall.cn  -->预发布
+         http://apisail.healthmall.cn      -->正式服
+
+后台地址：https://beta-sailweb.healthmall.cn  -->测试服
+          https://sailweb.healthmall.cn       -->正式服
+
+		  
+talnet 39.108.114.251 8090

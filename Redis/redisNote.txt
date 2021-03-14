@@ -1,0 +1,137 @@
+
+============ hash与字符串键存在诸多相似之处，那hash键存在的意义? ============
+1、Hash键可以将信息凝聚在一起，而不是直接分散存储在整个redis中，这不仅方便数据管理，还可以尽量避免一定的误操作。（牵强）
+
+2、避免键冲突。（牵强）
+
+3、减少内存占用（IO与cpu的占用），主要存在的意义
+  redis在第一层的key上会有相关的管理，比如说设置过期时间，第二层key上不会有这些管理，最后更新时间，等等这些计算都是在第一层key上处理。因此为了减少内存的占用可以用hash键代替字符串键。
+
+4、不适应hash键的情况
+  1)、过期功能的使用，过期功能只能使用在key上。
+  2)、二进制操作命令：如【setbit、getbit、bitop】
+  3)、需要考虑数据量分布的问题
+  
+
+
+============ springboot中使用redis ============
+	
+1、springboot中使用注解的方式使用缓存
+	1)、@Cacheable：取缓存
+	2)、@CachePut：修改缓存，如果不存在则创建
+	3)、@CacheEvict：如果缓存还存在就必须删除
+	@Cacheable(value = "mysql:findById:deparment", keyGenerator = "simpleKey")
+	@CachePut(value = "mysql:findById:deparment", keyGenerator = "objectId")
+	@CacheEvict(value = "mysql:findById:deparment", keyGenerator = "simpleKey")
+	其中valu中的参数是一个key的前缀，并由keyGenerator按一定规则生成唯一标识
+	@Cacheable(value = "SenseServiceImpl", key = "'getSenseList'.concat(#param.startTime.toString()).concat(#param.endTime.toString())", unless = "#result eq null")
+
+2、注意事项：1、key不要过长、不要过短、统一的命名规范
+
+============ Redis 中的多数据库 ============
+
+1、一共有15个数据库，默认存储的是0号数据库
+
+2、将key移动到1号数据库；【move key 1】
+
+3、redis中的事物的操作
+
+	1)、开启事务：【multi】
+	
+	2)、提交事务：【exec】	
+	
+	3)、事务回滚：【discard】
+	
+====================== Redis 集群 =Redis不是靠单点的性能来决定的，强调的是多实例，而memcache强调的是单点性能 ======================
+
+1、主从模式：一主多从，一台主机(可写)，多台从机(可读，适用高并发，类似于mysql的主从读写分离)，此方式最简陋，一旦主节点挂掉则不可用
+
+2、哨兵模式：一主多从，第一种模式升级，哨兵对各节点进行健康监控，一旦主节点挂掉，就在从节点中选出一个性能最佳的升级为主节[主从替换]点，2.x使用的机制，实现了高可用，[但没法实现分布式的数据库，主从数据都是一致的]，开启aof后，一般结合ssdb（写操作快）
+
+3、集群模式：第二种模式的升级，多主多从，主从替换。可以任意水平扩展，数据可以任意切割，分布式写操作
+
+4、问题：高并发是写入比较慢怎么解决？
+	答：1、水平扩展集群，分担写的操作
+		2、redis+ssdb技术结合(ssdb高并发时写操作很快)
+	
+5、如何解决高并发问题？	
+	答：解决高并发是一个综合的技术考虑，不单单是一个技术点能解决的，例如需要考虑:技术、业务、前台、后台、入口、数据库层
+
+高并发，负载均衡
+	前端的措施：Lvs+ng服务器 --> ng下又挂多个ng，分流，使不同的业务往不同的系统跑
+	java代码层：加高并发容器，做一些判断
+	业务层措施：
+	数据库措施：加缓存给数据库减压，能放进缓存的可以放入缓存
+	
+============ Redis 主从复制 ============
+
+1、建立一台master，见Linux下安装redis具体步骤；注：确保三台机器安装了相同版本的redis
+
+2、拷贝两台从，【scp -r redis-3.0.7/ 192.168.56.102:/usr/local/】，拷贝master的文件进行修改
+
+3、删除日志文件：【rm -f dump.rdb】
+
+4、修改slave配置文件：【vim redis.conf】，添加下面信息
+# slaveof <masterip> <masterport>
+【slaveof 192.168.56.101 6379】
+
+5、配置文件修改密码（如果master有密码则设置）：【masterauth root -123456】
+
+6、关闭防火墙：【yum install iptables-services】-->【service iptables stop】
+
+7、关闭seLinux：修改/etc/selinux/config 文件，将SELINUX=enforcing改为SELINUX=disabled ，重启机器即
+
+8、找到redis.conf中的 bind 127.0.0.1，将其注释 #bind 127.0.0.1，保存退出
+
+8、使用【info】或【info replication 】127.0.0.1:6379> info ， 可以查看Replication的一些信息
+
+
+============ Redis 哨兵设置 ============
+
+1、哨兵的作用：监控master和slave数据库是否正常运行，当master出现异常时，可以自动将其中一台slave切换为master。
+
+2、实现步骤：
+
+  1)、在其中一台slave服务器中配置sentinel.conf,例如这台192.168.56.102
+  
+  2)、copy一份sentinel.conf到/usr/local/redis/etc/中，修改sentinel.conf中的5处信息
+  【sentinel monitor mymaster 192.168.56.101 6379 1  ###名称 ip 端口号 投票次数】
+  【sentinel down-after-milliseconds mymaster 5000  ###默认1s检验一次，这里配置5000毫秒为宕机】
+  【sentinel parallel-syncs mymaster 2】
+  【sentinel failover-timeout mymaster 900000】
+  【sentinel can-failover mymaster yes】
+ 
+  3)、启动哨兵：【/usr/local/redis/bin/redis-server /usr/local/redis/etc/redis.conf --sentinel &】
+  
+  4)、查看sentinel相关信息命令：【/usr/local/redis/bin/redis-cli -h 192.168.56.102 -p 26379 info Sentinel】
+  
+  5)、关闭master查看集群信息：【/usr/local/redis/bin/redis-cli -h 192.168.56.101 -p 6379 shutdown】
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

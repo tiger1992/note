@@ -1,0 +1,74 @@
+
+7、属性复制工具：org.springframework.beans.BeanUtils.copyProperties (param,gym);   将前者的值复制给后者
+
+8、分组统计问题数：【String:评分结果id   Long：评分结果对应的题目的数量】
+	Map<String, Long> collect1 = rels.stream().collect(Collectors.groupingBy(PreQuestionResultSubjectRel::getQuestionResultId, Collectors.counting()));
+	Map<String, List<PreQuestionResultSubjectRel>> collect2 = rels.stream().collect(Collectors.groupingBy(PreQuestionResultSubjectRel::getQuestionResultId, Collectors.toList()));
+
+9、判空工具：org.apache.commons.lang3.StringUtils
+             org.apache.commons.collections4.CollectionUtils.isEmpty(param.getGoodsImageList())
+			 Assert.notNull ( deviceId , "deviceId不能为空" );
+
+9、数组工具【org.apache.commons.lang3.ArrayUtils】
+		 
+10、格式转换：
+			BigDecimal distance = sportRecordMiniOutDTO.getDistance();
+			if (distance != null) {
+				distance = distance.setScale(1, BigDecimal.ROUND_HALF_UP);
+				sportRecordMiniOutDTO.setDistance(calorie);
+			}else {
+				sportRecordMiniOutDTO.setDistance(new BigDecimal(1));
+			}
+			
+11、距离转换：recordListOutDTO.setSportKilometre(UnitChangeUtil.metre2Kilometre(recordListOutDTO.getSportKilometre(), 2));
+
+12、private static final List<Integer> DATE_TYPE = Arrays.asList(1, 2, 3);
+
+
+14、时区转换：@JsonFormat(pattern = "yyyy-MM-dd ",timezone = "GMT+8") 【记得时区转换】
+             ,DATE_FORMAT(sc.create_time,'%Y-%m-%d %H:%i:%s') AS intoTime  【sql中不需要这个似乎也可以】
+
+    入参数dto：@DateTimeFormat(pattern="yyyy-MM-dd")
+
+15、List<String> gameids = java.util.Arrays.asList(gameString.split(","));
+
+16、直接查询实体信息：【null中可以填入分页参数】
+		List < Device > list = this.query ( Query.newQuery ()
+				.where ( Device_.deviceIdentity.equal ( deviceId ) , Query.and , Device_.deleteFlag.equal ( CommonConstant.NOT_DELETE ) ) , null );
+		if ( list != null && list.size () > 0 )
+		{
+			return list.get ( 0 );
+		}
+17、直接查询实体信息【单个实体】
+		ActivityExtendExample extendExample = new ActivityExtendExample();
+		extendExample.createCriteria().andActivityIdEqualTo(id).andDeleteFlagEqualTo(CommonConstant.NOT_DELETE);
+		ActivityExtend activityExtend = this.selectOneByExample(extendExample);
+
+18、比较时间的方法
+       1)、thisDay.after(anotherDay)【java.util.Date.after()】
+       2)、thisDay.compareTo(anotherDay) >= 0  【java.util.Date.compareTo()】
+	   
+19、枚举类获取信息方式：
+	ActivityTypeEnum.TPOS.getCode();
+	ActivityTypeEnum.TPOS.getMsg();
+
+	
+	if (null == medalInfo) {
+		throw new ValidateException("升级勋章不存在");
+    }
+	
+	if(bodyReportView.getDeviceId().matches("^BT(\\w)+")){
+					//同方体测仪内脏脂肪数据处理
+					bodyReportViewAllOutDTO.setVfa(bodyReportView.getVfi());
+					bodyReportViewAllOutDTO.setMineral(bodyReportView.getBone());
+				}	
+		
+	AppResultObj.newResult(CodeConstant.CERTIFICATION_IDCARD_INVALID, "请输入正确的身份证号");
+	
+20、【非spring管理Bean获得spring管理Bean工具类】SpringUtil	
+    @Autowired
+    private static SSOUrlConfigProperties ssoUrlConfigProperties =SpringUtil.getBean(SSOUrlConfigProperties.class);
+	
+org.apache.commons.collections.CollectionUtils.sizeIsEmpty(memberMedalList)	
+
+

@@ -1,0 +1,37 @@
+
+1、示例代码一
+  【
+Collections.sort(collect, new Comparator<GymDeviceDetailOutDTO>() {
+	@Override
+	public int compare(GymDeviceDetailOutDTO o1, GymDeviceDetailOutDTO o2) {
+		return o2.getUseStatus().compareTo(o1.getUseStatus());
+	}
+});
+  】
+  
+2、示例代码二
+  【
+Collections.sort(collect, new Comparator<GymDeviceDetailOutDTO>() {
+	@Override
+	public int compare(GymDeviceDetailOutDTO o1, GymDeviceDetailOutDTO o2) {
+		if(o2.getUseStatus()!=5&&o1.getUseStatus()!=5) {
+			if(Integer.valueOf(o2.getDeviceNo())<Integer.valueOf(o1.getDeviceNo())) {
+				return 1;
+			}else {
+				return -1;
+			}
+		}else {
+			return 0;
+		}
+	}
+});
+  】
+					
+3、示例代码三 --> int 类型不需要 compareTo
+  【
+public int compareTo(ClassStudentScoreInfoVo o) {
+    return o.scoreSum - this.scoreSum;
+}
+  】
+	
+	

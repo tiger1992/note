@@ -1,0 +1,62 @@
+====== centos7下docker安装 ======
+
+1、方式1
+
+  1)、移除旧的版本：
+  【sudo yum remove docker docker-client docker-client-latest docker-common  docker-latest docker-latest-logrotate  docker-logrotate docker-selinux docker-engine-selinux docker-engine】
+				
+  2)、安装一些必要的系统工具：【sudo yum install -y yum-utils device-mapper-persistent-data lvm2】
+
+  3)、添加软件源信息：【sudo yum-config-manager --add-repo http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo】
+
+  4)、更新 yum 缓存：【sudo yum makecache fast】
+
+  5)、安装 Docker-ce：【sudo yum -y install docker-ce】,【sudo yum install -y docker-ce docker-ce-cli containerd.io】
+
+  6)、启动 Docker 后台服务：【sudo systemctl start docker】
+
+  7)、测试运行 hello-world：【docker run hello-world】
+  
+  8、设置开机启动：【systemctl start docker && systemctl enable docker】
+
+2、方式2，使用脚本安装
+
+  1)、使用 sudo 或 root 权限登录 Centos。
+
+  2)、确保 yum 包更新到最新：【sudo yum update】
+
+  3)、执行 Docker 安装脚本：【curl -fsSL https://get.docker.com -o get-docker.sh && sudo sh get-docker.sh】
+
+  4)、启动Docker进程 && 后台启动：【sudo systemctl start docker && sudo systemctl enable docker】
+
+  5)、验证 docker 是否安装成功并在容器中执行一个测试的镜像：【sudo docker run hello-world】
+
+删除docker：【sudo yum remove docker-ce】、【sudo rm -rf /var/lib/docker】
+
+====== 镜像加速 ======中国加速器
+
+1、创建文件夹【sudo mkdir -p /etc/docker】
+
+2、执行如下命令：网址，阿里云上加速地址【https://ea3wi4om.mirror.aliyuncs.com】
+sudo tee /etc/docker/daemon.json <<-'EOF'
+{ 
+  "exec-opts": ["native.cgroupdriver=systemd"],
+  "registry-mirrors": ["https://ea3wi4om.mirror.aliyuncs.com"]
+}
+EOF
+sudo systemctl daemon-reload
+sudo systemctl restart docker
+
+
+
+
+
+
+
+
+
+
+
+
+
+

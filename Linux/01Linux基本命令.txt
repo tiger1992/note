@@ -1,0 +1,366 @@
+
+1、【arch】显示机器的处理器架构
+
+2、【uname -m】显示机器的处理器架构
+
+这里我列出一些经常用的命令，具体的用法可以参见相关手册页（希望你的英文不象我这么差）。 
+　　vi
+　　head(用来看很长的文件用)
+　　tail(同上)
+　　netstat(看网络状态)
+　　tar(解开.tar.gz的压缩包)
+　　ps(察看进程)
+　　kill(干掉进程)
+　　top(看系统状况)
+　　shutdown(关闭系统)
+　　cat(看文件内容)
+　　ping (看网络连通状况)
+　　ftp(传输文件)
+　　man(手册)
+　　上面这些命令都是最最常用的，一定要把基本用法记牢。事实上，每人能记住全部命令或一个命令的全部参数，记住几个常用的就行了。其他的查书
+
+
+======== 关机命令 ========
+
+【shutdown -h now】立刻关机，其中 now 相当于时间为 0 的状态
+
+【shutdown -h 20:25】系统在今天的 20:25 分会关机，若在 21:25 才下达此挃令，则隑天才关机
+
+【shutdown -h +10】系统再过十分钟后自劢关机
+
+【shutdown -r now】系统立刻重新启劢
+
+【shutdown -r +30 'The system will reboot'】再过三十分钟系统会重新启劢，幵显示后面的讯息给所有在在线的使用者
+
+【shutdown -k now 'This system will reboot'】仅发出警告信件的参数！系统并不会关机啦！吓唬人！
+
+重新启动时下达的命令
+sync; sync; sync; reboot
+
+
+======== 时间 ========
+ 
+1、【date 】默认格式查看当前系统日期
+
+2、【date "+%Y年%m月%d日 %H:%M:%S"】格式化当前系统日期
+
+3、【date -s "20200502 15:59:00"】，将当前系统时间设置为 2020年5月2号 15:59:00
+		 
+4、【cal】显示当前月份日历 
+
+5、【cal 2018】指定显示某年的日历
+   
+6、【cal [month] [year]】指定显示某年某月的日历
+
+7、【date +%j】当前年中的第几天
+   
+   
+====== 基本命令 ======
+		 
+1、【ctrl + z】退出当前命令，相当于 quit 命令
+
+2、【ctrl + c】终止当前执行的命令
+
+3、[Tab] 接在一串挃令的第一个字的后面，则为命令补全；
+   [Tab] 接在一串挃令的第二个字以后时，则为『档案补齐』！
+
+4、man page 【操作说明】  info info 【在线文档】
+   代号
+     1：用户在 shell 环境中可以操作的挃令戒可执行文件
+	 5：配置文件戒者是某些档案的格式
+	 8：系统管理员可用的管理挃令
+	 
+5、增加新的群组：【groupadd project】
+
+6、建立 account  账号，并支持project群组：【useradd -G project account 】
+
+7、查阅 account  账号的属性：id account 
+
+8、查看所在目录路劲：【pwd】
+
+9、测试是否ping通：【ping 192.168.56.101】
+
+10、发送命令道全部终端：[查看 --> 撰写 --> 撰写栏]，在撰写栏下面勾选全部Xshell
+
+11、【top】动态查看系统运维情况
+
+12、【ifconfig】获取网卡配置与网络状态信息
+
+13、配置主机名称【echo "zookeeper-leader" > /etc/hostname】之后重启机器即可，替换前最好先备份之前的文件【cp -a /etc/hostname /etc/hostname_bck】
+
+14、使修改生效【systemctl restart sshd】
+
+
+====== history ======
+
+1、【history [-c]】用于显示历史执行过的命令，显示当前用户在本地计算机执行过的1000条命令记录，可以在文件中修改条数【/etc/profile】
+
+2、【history -c】清空所有命令历史记录
+
+3、【!15】按编号快速执行历史命令
+
+
+====== 文件解压缩 ======
+
+1、【tar [选项] [文件]】，对文件进行压缩或解压，-x表示解压，-c表示压缩
+
+2、【tar -xzvf ruby-2.5.3.tar.gz -C /usr/local/】将ruby-2.5.3.tar.gz解压到目标目录/usr/local/下，前提是目标目录必须存在
+
+3、【tar -cvzf jpg.tar.gz *.jpg】将目录里所有.jpg文件用gzip压缩成jpg.tar.gz
+
+
+====== 文本查看命令 ======
+
+1、【cat [选项] [文件]】用于查看内容较小的纯文本文件，例如【cat -n filename】显示行号
+
+2、【more [选项] [文件]】查看长篇小说或者非常长的配置文件
+
+3、【head [选项] [文件]】查看纯文本前N行，例如【head -n filename】
+
+4、【tail [选项] [文件]】查看纯文本后N行或持续刷新的内容，例如【tail -n filename】、【tail -f filename】
+
+5、【wc [参数] filename】统计指定文件的行数[-l]、字数[-w]、字节数[-c]，例如【wc -l /etc/passwd】
+
+6、【cut [参数] 文本】于按“列”提取文本字符，例如提取系统中所有用户名【cut -d: -f1 /etc/passwd】
+
+7、【tr [原始字符] [目标字符]】可以使用正则表达，例如【cat filename | tr [a-z] [A-Z]】,将所有小写替换成大写
+
+
+====== 文件目录管理器 ======
+
+1、【touch [选项] [文件]】创建空白文件或修改文件时间，例如修改时间：【touch -d "2017-05-04 15:44" anaconda-ks.cfg 】
+
+2、【mkdir [选项] 目录】创建空白的目录，例如递归创建嵌套目录【mkdir -p /a/b/c/d】
+
+3、【cp [选项] 源文件 目标文件】
+   将档案的所以特性都一起复制过来【cp -a /etc /tmp】，尤其是在备份的情况下！
+     
+4、【mv [选项] 源文件 [目标路径|目标文件名]】剪切文件或将文件重命名
+    /tmp 可以将多个数据一次复制到同一个目录去！最后面一定是目录！
+   【mv mkreleasehdr.sh redis-benchmark redis-check-aof redis-check-dump redis-cli redis-server /usr/local/bin/】
+
+5、【rm [选项] 文件】删除文件或目录，删除目录时需要加 -r，例如删除目录tiger【rm -rf tiger】
+
+6、【dd [参数]】按照指定大小和个数的数据块来复制文件或转换文件
+
+7、【file 文件名】查看文件类型
+
+8、建立软连接：【ln -s /usr/java/jdk1.8.0_60/ /usr/jdk】
+
+
+====== 远程安全传输 ======
+
+1、远程传输【scp [参数] 本地文件 远程帐户@远程 IP 地址:远程目录】
+  1)、【-v】 显示详细的连接进度
+  2)、【-P】 指定远程主机的 sshd 端口号
+  3)、【-r】 用于传送文件夹
+  4)、【-6】 使用 IPv6 协议
+  
+2、【scp -r /root/lrzsz-0.12.20.tar.gz 192.168.3.61:/root/lrzsz-0.12.20.tar.gz】
+   【scp -rv /root/zookeeper/apache-zookeeper-3.6.0-bin.tar.gz 192.168.3.102:/root/zookeeper】
+
+
+====== 搜索命令 ======
+
+1、【grep [选项] [文件]】在文本中执行关键词搜索，并显示匹配的结果
+
+2、【find [查找路径] 寻找条件 操作】按照指定条件来查找文件
+    案例：
+   【find /etc -name "host*" -print】指定目录/etc下查找以host开头的文件
+   【find /etc -name "host*" -exec cp -a {} /root/tiger/ \;】查找出目标文件并复制到指定目录下
+
+3、【locate /etc/host*】比较快，实是“find -name”的另一种写法，为避免查不到最新文件，先使用【updatedb】命令，手动更新数据库（/var/lib/locatedb）
+
+3、【whereis】只能用于程序名的搜索，而且只搜索二进制文件（参数-b）、man说明文件（参数-m）和源代码文件（参数-s）,如果省略参数，则返回所有信息。
+
+
+======== 文件编辑 vim ========
+
+1、Vim 编辑器中设置了三种模式—命令模式、末行模式和编辑模式
+
+  1)、命令模式【vim filename】：控制光标移动，可对文本进行复制、粘贴、删除和查找等工作
+    【dd】 删除（剪切）光标所在整行
+    【5dd】 删除（剪切）从光标处开始的 5 行
+    【yy】 复制光标所在整行
+    【5yy】 复制从光标处开始的 5 行
+    【u】 撤销上一步的操作
+    【p】 将之前删除（dd）或复制（yy）过的数据粘贴到光标后面
+	
+  2)、输入模式：正常的文本录入，在命令模式下输入一下3个命令可进入输入模式
+    【i】当前光标前
+    【a】当前光标后
+    【o】当前光标下面创建一个空行
+  
+  3)、末行模式：保存或退出文档，以及设置编辑环境
+    保存退出：【Esc --> :x--> enter】文件没改动时属性不变 、【Esc --> :wq--> enter】不管如何属性都会更新
+    【:w】 保存
+    【:q】 退出
+    【:q!】 强制退出（放弃对文档的修改内容）
+    【:wq!】 强制保存退出
+    【:set nu】 显示行号
+    【:set nonu】 不显示行号
+    【:命令】 执行该命令
+    【:整数】 跳转到该行
+	【:s/one/two】 将当前光标所在行的第一个 one 替换成 two
+    【:s/one/two/g】 将当前光标所在行的所有 one 替换成 two
+    【:%s/one/two/g】 将全文中的所有 one 替换成 two
+    【?字符串】 在文本中从下至上搜索该字符串
+    【/字符串】 在文本中从上至下搜索该字符串
+	【:w filename】辑处理后的结果写到指定的文件中保存
+	
+	
+====== echo ======
+
+1、【echo $SHELL】，提取变量
+
+
+
+====== 网卡信息 ======
+
+1、网卡文件所在目录【cd /etc/sysconfig/network-scripts】
+
+2、具体的网卡配置信息【cat cat ifcfg-eth1】
+
+
+====== shell 脚本 ======
+
+1、运行脚本命令【bash test.sh】
+
+2、【./test.sh】
+
+3、用户参数，变量之间可以使用空格间隔。例如
+
+  1)、【$0】当前 Shell 脚本程序的名称，
+  
+  2)、【$#】总共有几个参数，
+  
+  3)、【$*】所有位置的参数值，
+  
+  4)、【$?】显示上一次命令的执行返回值，
+  
+  5)、【$1、$2、$3……】分别对应着第 N 个位置的参数值
+  
+4、一个简单的脚本案例，第一行的脚本声明（#!）用来告诉系统使用哪种 Shell 解释器来执行该脚本；第二行的注释信息（#）
+
+  1)、创建脚本文件【vim test.sh】
+  
+  2)、写入如下内容
+  【
+#!/bin/bash
+#create by tiger
+echo "当前脚本名称为$0"
+echo "上次命令的返回值$?"
+echo "总共有$#个参数，分别是$*。"
+echo "第 1 个参数为$1，第 5 个为$5。" 
+  】
+  
+  3)、执行脚本【bash test.sh parameter1 parameter2 parameter3 parameter4 parameter5 parameter6】
+
+5、判断用户参数 
+
+
+
+======== 查看进程 ========
+ 
+1、关键字查看：【ps -ef | grep redis】 【ps -ef | grep 6379】
+
+2、端口号查看：【netstat -tunpl | grep 6379】 【netstat -ano | grep 6379】 
+
+3、查看所有进程：【netstat -ntlp】 
+ 
+
+======== 修改 hostname ========
+ 
+1、[root@localhost ~]# 【vim /etc/sysconfig/network】 ，进入加入下面信息
+NETWORKING=yes
+HOSTNAME=redis101
+
+2、[root@localhost ~]# 【hostname redis101】
+
+3、关闭连接重开，出现：[root@redis101 ~]#
+
+4、配置主机名称【echo "zookeeper-leader" > /etc/hostname】之后重启机器即可，替换前最好先备份之前的文件【cp -a /etc/hostname /etc/hostname_bck】
+
+
+======== 防火墙(rhel7) firewalld（一种定义防火墙策略门面手段） ========
+
+1、临时关闭 ：【systemctl stop firewalld】
+
+2、临时开启 ：【systemctl start firewalld】
+
+3、取消开机启动 ：【systemctl disable firewalld】
+
+4、开机启动 ：【systemctl enable firewalld】
+
+5、查看状态 ：【systemctl status firewalld】
+
+6、开放防火墙8321端口：【firewall-cmd --permanent --add-port=8321/tcp && firewall-cmd --reload】
+
+====== 防火墙(rhel6) iptables ======
+
+1、iptables 服务把用于处理或过滤流量的策略条目称之为规则，多条规则可以组成一个规则链，而规则链则依据数据包处理位置的不同进行分类，具体如下：
+  1)、在进行路由选择前处理数据包（PREROUTING）；
+  2)、处理流入的数据包（INPUT）；
+  3)、处理流出的数据包（OUTPUT）；
+  4)、处理转发的数据包（FORWARD）；
+  5)、在进行路由选择后处理数据包（POSTROUTING）。
+  一般来说，从内网向外网发送的流量一般都是可控且良性的，因此我们使用最多的就是INPUT 规则链，该规则链可以增大黑客人员从外网入侵内网的难度
+
+2、添加指定端口到防火墙中：【iptables -I INPUT -p 协议 --dport 端口号 -j ACCEPT】例如：
+	1)、【iptables -I INPUT -p udp --dport 8321 -j ACCEPT】
+	2)、【iptables -I INPUT -p tcp --dport 8080 -j ACCEPT】  
+
+
+1、修改网卡配置文件 /etc/sysconfig/network-scripts/ifcfg-enp0s3 此处我虚拟机网卡是enp0s3，其它虚拟机可能是别的名字。
+2、重启网卡生效：【service network restart】
+
+
+======== & 的一些含义 ======== 
+
+1、三个命令同时执行：【command1 & command2 & command3】
+
+2、不管前面命令执行成功没有，后面的命令继续执行：【command1; command2; command3】
+
+3、只有前面命令执行成功，后面命令才继续执行：【command1 && command2】
+
+======== SELinux（Security-Enhanced Linux）是 ========
+
+1、目的：SELinux 技术的目的是为了让各个服务进程都受到约束，使其仅获取到本应获取的资源。“SELinux 域”和“SELinux 安全上下文”称为是 Linux 系统中的双保险，系统内的服务程序只能规规矩矩地拿到自己所应该获取的资源，这样即便黑客入侵了系统，也无法利用系统内的服务程序进行越权操作。
+
+2、SELinux 服务有三种配置模式
+
+  1)、【enforcing】：强制启用安全策略模式，将拦截服务的不合法请求。
+  2)、【permissive】：遇到服务越权访问时，只发出警告而不强制拦截。
+  3)、【disabled】：对于越权的行为不警告也不拦截。
+
+ 
+1、临时关闭SELinux：【setenforce 0】
+
+2、临时打开SELinux ：【setenforce 1】
+
+3、查看SELinux状态 ：【getenforce】
+
+4、开机关闭SELinux：【修改/etc/selinux/config 文件，将SELINUX=enforcing改为SELINUX=disabled ，重启机器即】 
+
+ yum -y update
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,7 @@
+
+
+	PageParameter pageParameter = new PageParameter(
+		param.getPage() == null ? 0 : param.getPage()
+		, param.getCount() == null ? 10 : param.getCount());
+	
+		
