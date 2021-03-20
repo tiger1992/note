@@ -1,5 +1,7 @@
 # 前世今生
 
+了解其技术的演进过程，一步一步进行优化，使得code变得更加简单
+
 1. spring framework APO、IOC/DI
 
    spring之前是在代码中直接new，springboot之后，对象由IOC容器管理。
@@ -15,7 +17,7 @@
 # 特性
 
 1. EnableAutoConfiguration 自动装配
-2. Start启动依赖
+2. Start启动，依赖于自动装配技术
 3. Actuator 监控 , 提供了一些endpoint ，http、jmx形式去进行访问， health信息。 metrics 信 息
 4. Spring Boot CLI（命令行操作的功能， groovy脚本） 客户端, groovy
 5. …
@@ -45,7 +47,7 @@ Spring Framework2.x时代，2.0版本在Annotation中添加了@Required、@Repos
 
 ## Spring 3.x阶段
 
-Spring Framework3.0是一个里程碑式的时代，他的功能特性开始出现了非常大的扩展，比如全面拥抱 Java5、以及Spring Annotation。更重要的是，它提供了配置类注解@Configuration， 他出现的首要任务就是取代XML配置方式
+Spring Framework3.0是一个里程碑式的时代，他的功能特性开始出现了非常大的扩展，比如全面拥抱 Java5、以及Spring Annotation。更重要的是，它提供了配置类注解@Configuration， 他出现的首要任务就是取代XML配置方式，无配置化的方式实现Bean的装配
 
 * @Configuration 去xml化
 
@@ -73,9 +75,13 @@ Spring Framework3.0是一个里程碑式的时代，他的功能特性开始出�
 
 * @EnableXXX
 
+## Spring 4.x阶段
 
+@Conditional，条件化配置，控制类在满足什么样的条件下才需要装载到IOC容器中
 
+# Spring 5.x阶段
 
+@Indexed，性能优化，
 
 
 

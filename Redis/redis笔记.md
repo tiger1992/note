@@ -6,7 +6,19 @@ flushall
 
 flushdb 
 
-# Redis 5种数据类型
+
+
+# 安装
+
+## docker安装
+
+~~~shell
+ docker run -p 6379:6379 --name redis -v /usr/local/docker/redis/redis.conf:/etc/redis/redis.conf -v /usr/local/docker/redis/data:/data -d redis redis-server /etc/redis/redis.conf --appendonly yes 
+~~~
+
+
+
+# 5种数据类型
 
 ## 字符串（String）Map<key,value>
 
