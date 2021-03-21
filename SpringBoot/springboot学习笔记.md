@@ -79,9 +79,20 @@ Spring Framework3.0是一个里程碑式的时代，他的功能特性开始出�
 
 @Conditional，条件化配置，控制类在满足什么样的条件下才需要装载到IOC容器中
 
-# Spring 5.x阶段
+## Spring 5.x阶段
 
 @Indexed，性能优化，
 
 
+
+# Start 启动
+
+Spring IOC 动态bean的装载，约定优于配置
+
+1. ImportSelector: DeferredImportSelector 
+2. Registator : ImportBeanDefinitionRegistrar
+
+## SPI
+
+1. 需要在classpath目录下创建一个 META-INF/services 在该目录下创建一个 扩展点的全路径名. 文件中填写这个扩展点的实现 文件编码格式UTF-8 ServiceLoader去进行加载
 
