@@ -95,4 +95,10 @@ Spring IOC 动态bean的装载，约定优于配置
 ## SPI
 
 1. 需要在classpath目录下创建一个 META-INF/services 在该目录下创建一个 扩展点的全路径名. 文件中填写这个扩展点的实现 文件编码格式UTF-8 ServiceLoader去进行加载
+2. …
+
+## 包命名规范
+
+1. 官方：spring-boot-starter-xxx
+2. 第三方：xxx-spring-boot-starter
 
