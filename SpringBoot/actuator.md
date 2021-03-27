@@ -50,16 +50,18 @@ chmod 777 -R /usr/local/docker/prometheus
 配置文件
 
 ~~~yaml
-global:
-  scrape_interval:     60s
-  evaluation_interval: 60s
- 
 scrape_configs:
-  - job_name: prometheus
+# The job name is added as a label `job=<job_name>` to any timeseries scraped from this config.
+  - job_name: 'prometheus'
+# metrics_path defaults to '/metrics'
+# scheme defaults to 'http'.
     static_configs:
-      - targets: ['localhost:9090']
-        labels:
-          instance: prometheus
+    - targets: ['localhost:9090']
+  - job_name: 'spring-actuator'
+    metrics_path: '/actuator/prometheus'
+    scrape_interval: 5s
+    static_configs:
+    - targets: ['159.75.79.151:8080'] #需要监控的应用节点
 ~~~
 
 启动
@@ -74,9 +76,25 @@ docker run  -d \
   --storage.tsdb.retention.time=100d
 ~~~
 
+## 安装Grafana
 
+~~~shell
+docker run -d --name grafana  -p 3000:3000 -v /usr/local/docker/grafana/grafana.ini:/etc/grafana/grafana.ini grafana/grafana grafana
+~~~
 
+查看密码
 
+~~~shell
+docker exec -it grafana /bin/bash cat /etc/grafana/grafana.ini > grafana.ini
+~~~
+
+## Grafana面板配置
+
+菜单选择 Configuration -> Data Source -> Add Data Source 配置Prometheus作为数据源下载别人配置好的面板直接导入 Grafana的面板配置过程还是比较繁琐的，如果我们不想自己去配置，那我们可以去Grafana官网上去 下载一个dashboard。 
+
+推荐： https://grafana.com/grafana/dashboards/6756 下载完成后，在"+"这个菜单中，点击"import"，导入下载好的json文件即可。 
+
+根据ID进行load 模板地址：https://grafana.com/dashboards 在搜索框中搜索 Spring Boot 会检索出相关的模板，选择一个自己喜欢。 这里可以采用: https://grafana.com/grafana/dashboards/10280 这个，看起来比较清晰 复制下图所示的dashboard的ID号
 
 
 

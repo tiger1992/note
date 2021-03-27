@@ -333,7 +333,6 @@ HOSTNAME=redis101
   2)、【permissive】：遇到服务越权访问时，只发出警告而不强制拦截。
   3)、【disabled】：对于越权的行为不警告也不拦截。
 
- 
 1、临时关闭SELinux：【setenforce 0】
 
 2、临时打开SELinux ：【setenforce 1】
@@ -342,10 +341,21 @@ HOSTNAME=redis101
 
 4、开机关闭SELinux：【修改/etc/selinux/config 文件，将SELINUX=enforcing改为SELINUX=disabled ，重启机器即】 
 
- yum -y update
+5、yum -y update
 
 
 
+------ 设置别名 ------
+在当前用户目录下的一个隐藏文件【.bashrc】，在里面添加以下信息
+
+alias nstart='./nginx -c /usr/local/soft/nginx/conf/nginx.conf'
+alias nstop='cd /usr/local/soft/nginx/sbin/;./nginx -s stop'
+alias nreload='cd /usr/local/soft/nginx/sbin/;./nginx -s reload'
+alias rm='rm -i'
+alias mv='mv -i'
+alias cp='cp -i'
+
+添加完后，【source .bashrc】，使其生效
 
 
 

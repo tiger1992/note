@@ -305,6 +305,16 @@ docker logs 容器id
 docker cp indexdocker.html 容器id://usr/share/nginx/html
 ```
 
+容器内文件拷贝到住宿机器
+
+~~~shell
+# docker cp 容器id:容器内文件路径 目标路径
+# 示例，#注意没有"."
+docker cp grafana:/etc/grafana/grafana.ini /usr/local/docker/grafana/grafana.ini
+~~~
+
+
+
 ## 查看容器详情
 
 ```

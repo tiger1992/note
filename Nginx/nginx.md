@@ -1,3 +1,130 @@
+
+
+
+
+# 安装
+
+## 源码方式
+
+1. nginx官网找到最新稳定版本【http://nginx.org/en/download.html】
+
+2. 安装
+
+   ~~~shell
+   cd /usr/local/soft
+   wget http://nginx.org/download/nginx-1.18.0.tar.gz
+   ~~~
+
+3. 解压
+
+   ~~~shell
+   tar -xzvf nginx-1.18.0.tar.gz
+   ~~~
+
+4. 安装依赖环境
+
+   ~~~shell
+   # gcc环境：基本运行环境
+   # pcre：用于nginx的http模块解析正则表达式
+   # zlib：用户进行gzip压缩
+   # openssl：用于nginx https协议的传输
+   yum install -y gcc-c++ pcre pcre-devel zlib zlib-devel openssl openssl-devel
+   ~~~
+
+5. 编译安装
+
+   ~~~shell
+   cd /usr/local/soft/nginx-1.18.0
+   ./configure --prefix=/usr/local/soft/nginx 
+   make && sudo make install
+   cd /usr/local/soft/nginx/
+   ~~~
+
+6. 检测安装是否成功
+
+   ~~~shell
+   /usr/local/soft/nginx/sbin/nginx -t -c /usr/local/soft/nginx/conf/nginx.conf
+   ~~~
+
+7. 启动nginx
+
+   ~~~shell
+   # 默认配置文件启动
+   /usr/local/soft/nginx/sbin/nginx
+   # 指定配置文件启动
+   ./nginx -c /usr/local/soft/nginx/conf/nginx-domains.conf
+   ~~~
+
+8. 浏览器直接访问IP（HTTP协议默认80端口，不需要输入）：
+
+   ~~~
+   http://159.75.79.151/
+   ~~~
+
+9. copy vimfile
+
+   ~~~shell
+   # 为了让VIM查看nginx配置文件时语法高亮，需要把相应文件copy到VIM目录。
+   # 先确定本机的vimfiles目录在哪个位置。
+   find / -name vimfiles
+   cd /usr/local/soft/nginx-1.18.0
+   cp -r contrib/vim/* /usr/share/vim/vimfiles/
+   ~~~
+
+10. 常用命令，在sbin目录下，l例如【./nginx -v】
+
+    ~~~shell
+    nginx -s reopen #重启Nginx
+    
+    nginx -s reload #重新加载Nginx配置文件，然后以优雅的方式重启Nginx
+    
+    nginx -s stop #强制停止Nginx服务
+    
+    nginx -s quit #优雅地停止Nginx服务（即处理完所有请求后再停止服务）
+    
+    nginx -t #检测配置文件是否有语法错误，然后退出
+    
+    nginx -?,-h #打开帮助信息
+    
+    nginx -v #显示版本信息并退出
+    
+    nginx -V #显示版本和配置选项信息，然后退出
+    
+    nginx -t #检测配置文件是否有语法错误，然后退出
+    
+    nginx -T #检测配置文件是否有语法错误，转储并退出
+    
+    nginx -q #在检测配置文件期间屏蔽非错误信息
+    
+    nginx -p prefix #设置前缀路径(默认是:/usr/share/nginx/)
+    
+    nginx -c filename #设置配置文件(默认是:/etc/nginx/nginx.conf)
+    
+    nginx -g directives #设置配置文件外的全局指令
+    
+    killall nginx #杀死所有nginx进程
+    ~~~
+
+11. 
+
+12. …
+
+## docker
+
+### 创建挂载目录
+
+~~~shell
+mkdir -p /usr/local/soft/nginx/{conf,conf.d,html,log}
+~~~
+
+### 启动
+
+~~~shell
+docker run --name nginx01 -d -p 80:80  -v /usr/local/soft/nginx/conf/nginx.conf:/etc/nginx/nginx.conf  -v /usr/local/soft/nginx/log:/var/log/nginx  -v /usr/local/soft/nginx/html:/usr/share/nginx/html nginx
+~~~
+
+
+
 # HTTP协议
 
 HTTP 协议是基于应用层的协议，并且在传输层使用的 TCP 的可靠性通信协议
@@ -9,6 +136,8 @@ ip确定具体的地址，端口确定地址内的进程，组合在一起确定
 ## 域名
 
 ip不易记住，用域名来方便人脑记忆，通过dns域名解析器来转换
+
+http默认端口是80，https默认端口443
 
 ~~~tex
 协议://子域名.顶级域名.域名类型/资源路径?参数
@@ -141,84 +270,92 @@ https://user.qzone.qq.com/1165069099/infocenter?via=toolbar
 | Vary               | 代理服务器缓存的管理信息     |
 | WWW-Authenticate   | 服务器对客户端的认证信息     |
 
-# docker安装nginx
+## 
 
-## 创建挂载目录
+# 案例实战
 
-~~~shell
-mkdir -p /usr/local/soft/nginx/{conf,conf.d,html,log}
-~~~
+## 虚拟主机/绑定目录
 
-## 配置文件nginx.conf ，上传到nginx的conf目录下
+### 配置文件
 
 1. 全局快
 2. events块
 3. http块
 
 ~~~shell
-user  nginx;
+
+#user  nobody;
 worker_processes  1;
 
-error_log  /var/log/nginx/error.log warn;
-pid        /var/run/nginx.pid;
-
+#error_log  logs/error.log;
+#error_log  logs/error.log  notice;
+#error_log  logs/error.log  info;
+#pid        logs/nginx.pid;
 
 events {
     worker_connections  1024;
 }
 
-
 http {
-    include       /etc/nginx/mime.types;
+    include       mime.types;
+    # 可将其他配置文件包括进来
+    include       *.conf;
+    
     default_type  application/octet-stream;
 
-    log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
-                      '$status $body_bytes_sent "$http_referer" '
-                      '"$http_user_agent" "$http_x_forwarded_for"';
+    #log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
+    #                  '$status $body_bytes_sent "$http_referer" '
+    #                  '"$http_user_agent" "$http_x_forwarded_for"';
 
-    access_log  /var/log/nginx/access.log  main;
+    #access_log  logs/access.log  main;
 
     sendfile        on;
     #tcp_nopush     on;
 
+    #keepalive_timeout  0;
     keepalive_timeout  65;
 
     #gzip  on;
 
-    #include /etc/nginx/conf.d/*.conf;
+    server {
+        listen       80;
+        server_name  www.tiger.com;
+        root   /usr/local/soft/nginx/data/tiger.html;
+
+        location / {
+            index  index.html index.htm;
+        }
+
+        error_page   500 502 503 504  /50x.html;
+        location = /50x.html {
+            root   html;
+        }
+    }
 
     server {
         listen       80;
-        server_name  localhost;
-
-        #charset koi8-r;
-
-        #access_log  logs/host.access.log  main;
+        server_name  www.jiajia.com;
+        root   /usr/local/soft/nginx/data/jiajia.html;
 
         location / {
-            root   /usr/share/nginx/html;
-            #root这里填了容器中的绝对路径
-            #我填相对路径如html时
-            #容器会去/etc/nginx/html找
             index  index.html index.htm;
         }
-        
-        location /api {
-        	#这里是后端的设置，根据你的实际情况写
-            rewrite ^/api/(.*)$ /$1 break;
-            proxy_pass http://49.234.55.50:80;
+
+        # redirect server error pages to the static page /50x.html
+        error_page   500 502 503 504  /50x.html;
+        location = /50x.html {
+            root   html;
         }
     }
 }
 
-
 ~~~
 
-## 启动
+### 
 
-~~~shell
-docker run --name nginx01 -d -p 80:80  -v /usr/local/soft/nginx/conf/nginx.conf:/etc/nginx/nginx.conf  -v /usr/local/soft/nginx/log:/var/log/nginx  -v /usr/local/soft/nginx/html:/usr/share/nginx/html nginx
-~~~
+
+
+
 
 
 
