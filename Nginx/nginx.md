@@ -53,6 +53,8 @@
    /usr/local/soft/nginx/sbin/nginx
    # 指定配置文件启动
    ./nginx -c /usr/local/soft/nginx/conf/nginx-domains.conf
+   
+   ./nginx -c /usr/local/soft/nginx/conf/nginx-sdy.conf
    ~~~
 
 8. 浏览器直接访问IP（HTTP协议默认80端口，不需要输入）：
@@ -276,82 +278,145 @@ https://user.qzone.qq.com/1165069099/infocenter?via=toolbar
 
 ## 虚拟主机/绑定目录
 
-### 配置文件
-
-1. 全局快
-2. events块
-3. http块
+### nginx.conf
 
 ~~~shell
 
-#user  nobody;
-worker_processes  1;
-
-#error_log  logs/error.log;
-#error_log  logs/error.log  notice;
-#error_log  logs/error.log  info;
-#pid        logs/nginx.pid;
-
-events {
-    worker_connections  1024;
-}
-
-http {
-    include       mime.types;
-    # 可将其他配置文件包括进来
-    include       *.conf;
-    
-    default_type  application/octet-stream;
-
-    #log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
-    #                  '$status $body_bytes_sent "$http_referer" '
-    #                  '"$http_user_agent" "$http_x_forwarded_for"';
-
-    #access_log  logs/access.log  main;
-
-    sendfile        on;
-    #tcp_nopush     on;
-
-    #keepalive_timeout  0;
-    keepalive_timeout  65;
-
-    #gzip  on;
-
-    server {
-        listen       80;
-        server_name  www.tiger.com;
-        root   /usr/local/soft/nginx/data/tiger.html;
-
-        location / {
-            index  index.html index.htm;
-        }
-
-        error_page   500 502 503 504  /50x.html;
-        location = /50x.html {
-            root   html;
-        }
-    }
-
-    server {
-        listen       80;
-        server_name  www.jiajia.com;
-        root   /usr/local/soft/nginx/data/jiajia.html;
-
-        location / {
-            index  index.html index.htm;
-        }
-
-        # redirect server error pages to the static page /50x.html
-        error_page   500 502 503 504  /50x.html;
-        location = /50x.html {
-            root   html;
-        }
-    }
-}
-
 ~~~
 
-### 
+## 反向代理
+
+1. 在内网中开启两个服务
+
+   ~~~sh
+   # 服务前缀 test
+   curl http://172.16.0.8:8080/
+   # 服务前缀 tiger
+   curl http://172.16.0.8:8081/
+   ~~~
+
+2. 修改配置文件nginx.conf
+
+   ~~~shell
+   # For more information on configuration, see:
+   #   * Official English Documentation: http://nginx.org/en/docs/
+   #   * Official Russian Documentation: http://nginx.org/ru/docs/
+   
+   #user  nobody;
+   worker_processes auto;
+   error_log /usr/local/soft/nginx/logs/error.log;
+   pid /run/nginx.pid;
+   
+   # Load dynamic modules. See /usr/share/doc/nginx/README.dynamic.
+   include /usr/share/nginx/modules/*.conf;
+   
+   events {
+       worker_connections 1024;
+   }
+   
+   http {
+       log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
+                         '$status $body_bytes_sent "$http_referer" '
+                         '"$http_user_agent" "$http_x_forwarded_for"';
+   
+       access_log  /usr/local/soft/nginx/logs/access.log  main;
+   
+       sendfile            on;
+       tcp_nopush          on;
+       tcp_nodelay         on;
+       keepalive_timeout   65;
+       types_hash_max_size 2048;
+   
+       include             /usr/local/soft/nginx/conf/mime.types;
+       default_type        application/octet-stream;
+   
+       # Load modular configuration files from the /etc/nginx/conf.d directory.
+       # See http://nginx.org/en/docs/ngx_core_module.html#include
+       # for more information.
+       include /usr/local/soft/nginx/conf/conf.d/*.conf;
+   
+       server {
+           # 对外开放的端口，默认是80
+           listen       80;
+           # 公网ip或域名
+           server_name 159.75.79.151;
+           root         /usr/share/nginx/html;
+   
+           # Load configuration files for the default server block.
+           include /usr/local/soft/nginx/conf/default.d/*.conf;
+   
+           #location / {
+           #}
+          
+          # 服务1映射信息
+          location /test {
+               proxy_http_version 1.1;
+               proxy_pass http://172.16.0.8:8080/;
+               # 转换请求方法，默认是get
+               proxy_method POST;
+               # nginx 服务端 ip:port
+               proxy_set_header   Host    $host:$server_port;
+               #获取 客户端地址设置到 header 中
+               proxy_set_header   X-Real-IP   $remote_addr;
+               # 获取所有转发请求的ip地址设置到 header 中
+               proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
+               client_max_body_size  1000M;
+           }
+   
+         # 服务2映射信息
+          location /tiger {
+               proxy_http_version 1.1;
+               proxy_pass http://172.16.0.8:8081/;
+               proxy_set_header   Host    $host:$server_port;
+               proxy_set_header   X-Real-IP   $remote_addr;
+               proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
+               client_max_body_size  1000M;
+           }   
+           
+   
+   
+          # error_page 404 /404.html;
+          # location = /404.html {
+          # }
+   
+           #error_page 500 502 503 504 /50x.html;
+           #location = /50x.html {
+           #}
+       }
+   
+   # Settings for a TLS enabled server.
+   #
+   #    server {
+   #        listen       443 ssl http2 default_server;
+   #        listen       [::]:443 ssl http2 default_server;
+   #        server_name  _;
+   #        root         /usr/share/nginx/html;
+   #
+   #        ssl_certificate "/etc/pki/nginx/server.crt";
+   #        ssl_certificate_key "/etc/pki/nginx/private/server.key";
+   #        ssl_session_cache shared:SSL:1m;
+   #        ssl_session_timeout  10m;
+   #        ssl_ciphers HIGH:!aNULL:!MD5;
+   #        ssl_prefer_server_ciphers on;
+   #
+   #        # Load configuration files for the default server block.
+   #        include /etc/nginx/default.d/*.conf;
+   #
+   #        location / {
+   #        }
+   #
+   #        error_page 404 /404.html;
+   #        location = /404.html {
+   #        }
+   #
+   #        error_page 500 502 503 504 /50x.html;
+   #        location = /50x.html {
+   #        }
+   #    }
+   }
+   ~~~
+
+3. …
 
 
 

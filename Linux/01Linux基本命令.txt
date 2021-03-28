@@ -348,17 +348,23 @@ HOSTNAME=redis101
 ------ 设置别名 ------
 在当前用户目录下的一个隐藏文件【.bashrc】，在里面添加以下信息
 
+alias rm='rm -i'
+alias cp='cp -i'
+alias mv='mv -i'
 alias nstart='./nginx -c /usr/local/soft/nginx/conf/nginx.conf'
+alias ndstart='./nginx -c /usr/local/soft/nginx/conf/nginx-domains.conf'
 alias nstop='cd /usr/local/soft/nginx/sbin/;./nginx -s stop'
 alias nreload='cd /usr/local/soft/nginx/sbin/;./nginx -s reload'
-alias rm='rm -i'
-alias mv='mv -i'
-alias cp='cp -i'
+
+# 查看端口快捷别名,例如要查看80端口使用情况，可以这样【myport :80】
+alias myport='netstat -anp | grep'
+alias myps='ps -ef | grep '
+
 
 添加完后，【source .bashrc】，使其生效
 
 
-
+查看 80 端口被使用情况【netstat -anp | grep :80】
 
 
 
