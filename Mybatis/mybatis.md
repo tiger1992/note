@@ -61,6 +61,23 @@ SELECT exists(SELECT _view.id FROM mem_body_report_view _view WHERE _view.member
 </if>
 ~~~
 
+~~~sql
+       <!-- 判断教师冲突 -->
+        <if test="conflictType.contains(&quot;teacher&quot;) and teacherId != null and teacherId != ''">
+            UNION (  SELECT 'JSCT' AS CTLX, KBMX.XQ, KBMX.JC_ID
+                        FROM LY_YJS_HXSJ.T_PKGL_KBAPMX KBMX
+                        WHERE  KBMX.JGH = #{teacherId,jdbcType=VARCHAR}
+                            and kbmx.zc in
+                            <foreach collection="weekList" index="index" item="item" close=")" open="(" separator=",">
+                                #{item,jdbcType=VARCHAR}
+                            </foreach>
+                            and kbmx.xnxq_id = #{semesterId,jdbcType=VARCHAR}
+                        GROUP BY KBMX.XQ, KBMX.JC_ID)
+        </if>
+~~~
+
+
+
 # 比较两个字符串
 
 

@@ -150,6 +150,12 @@ const { getFieldDecorator,getFieldValue } = this.props.form
 let courseAttributeCode = this.refs.modifyCourseAttributeModal.getFieldValue("courseAttributeCode")
 ~~~
 
+# 获取当前表单
+
+~~~js
+ let fromData = this.props.form.getFieldsValue();
+~~~
+
 # 获取当前搜索框的值
 
 ~~~js
@@ -926,7 +932,7 @@ onSwitchChange = (record, text) => {
 # 区间查询框
 
 ~~~js
-<Col {...colSpan}>
+                  <Col {...colSpan}>
                             <FormItem {...formItemLayout} label="正考:">
                                 <Row>
                                     <Col span={11}>
@@ -989,9 +995,72 @@ onSwitchChange = (record, text) => {
                             </Col>
 ~~~
 
+# 遍历对象
 
+~~~js
+for (var index in formData) {
+    console.log('formData[index]值', formData[index]);
+    console.log('index属性', index);
+}
+~~~
 
+# 按钮分割
 
+~~~js
+<Divider type="vertical" />
+~~~
+
+# 启动内存溢出解决办法
+
+~~~
+npm run start --max_old_space_size=4096
+~~~
+
+# excel导出组件
+
+~~~js
+// 引入组件
+import ExportJsonExcel from "js-export-excel";
+
+//组装数据导出Excel
+  downloadExcel = () => {
+    // currentPro 是列表数据
+    const { dataSource, onSchoolYear } = this.state;
+
+    let tableData = [];
+    const header = onSchoolYear.map(item => item.title);
+
+    if (dataSource.length > 0) {
+      dataSource.forEach(item => {
+        let obj = {
+          '学院': item.collegeName
+        };
+        header.forEach(head => {
+          if (item[`${head}`]) {
+            obj[`${head}`] = item[`${head}`];
+          } else {
+            obj[`${head}`] = 0;
+          }
+        });
+        tableData.push(obj);
+      });
+    }
+    const option = {
+      fileName: "学生情况分析",
+      datas: [
+        {
+          sheetData: tableData,
+          sheetName: "sheet",
+          sheetFilter: ['学院'].concat(header),
+          sheetHeader: ['学院'].concat(header),
+          columnWidths: [15]
+        }
+      ]
+    };
+    const toExcel = new ExportJsonExcel(option);
+    toExcel.saveExcel();
+  };
+~~~
 
 
 
