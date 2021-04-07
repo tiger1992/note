@@ -295,7 +295,7 @@ https://user.qzone.qq.com/1165069099/infocenter?via=toolbar
    curl http://172.16.0.8:8081/
    ~~~
 
-2. 修改配置文件nginx.conf
+2. 修改配置文件nginx.conf，部署在【159.75.79.151】中
 
    ~~~shell
    # For more information on configuration, see:
@@ -334,6 +334,13 @@ https://user.qzone.qq.com/1165069099/infocenter?via=toolbar
        # See http://nginx.org/en/docs/ngx_core_module.html#include
        # for more information.
        include /usr/local/soft/nginx/conf/conf.d/*.conf;
+       
+       # 负载均衡
+       upstream load_balancing_test {
+           server 159.75.79.151:8080;
+           server 49.234.55.50:8080;
+           server 49.234.55.50:8081;
+       }
    
        server {
            # 对外开放的端口，默认是80
@@ -347,8 +354,18 @@ https://user.qzone.qq.com/1165069099/infocenter?via=toolbar
    
            #location / {
            #}
+           
+          # 负载均衡测试，访问【http://159.75.79.151/load_balancing_test/tiger/test】
+          location /load_balancing_test {
+               proxy_http_version 1.1;
+               proxy_pass http://load_balancing_test/;
+               proxy_set_header   Host    $host:$server_port;
+               proxy_set_header   X-Real-IP   $remote_addr;
+               proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
+               client_max_body_size  1000M;
+           }
           
-          # 服务1映射信息
+          # 服务1映射信息,访问【http://159.75.79.151/test/tiger/test】
           location /test {
                proxy_http_version 1.1;
                proxy_pass http://172.16.0.8:8080/;
@@ -363,7 +380,7 @@ https://user.qzone.qq.com/1165069099/infocenter?via=toolbar
                client_max_body_size  1000M;
            }
    
-         # 服务2映射信息
+         # 服务2映射信息,访问【http://159.75.79.151/tiger/test】
           location /tiger {
                proxy_http_version 1.1;
                proxy_pass http://172.16.0.8:8081/;
@@ -371,9 +388,7 @@ https://user.qzone.qq.com/1165069099/infocenter?via=toolbar
                proxy_set_header   X-Real-IP   $remote_addr;
                proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
                client_max_body_size  1000M;
-           }   
-           
-   
+           }    
    
           # error_page 404 /404.html;
           # location = /404.html {
