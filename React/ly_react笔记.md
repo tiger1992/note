@@ -335,6 +335,14 @@ selectDepartment({}, (data) => {
 ellipsis: true,
 ~~~
 
+~~~js
+ render: (text) => (
+                    <Tooltip placement="topLeft" title={text}>
+                        <div style={{ overflow: "hidden", textOverflow: "ellipsis", "whiteSpace": 'nowrap' }}>{text}</div>
+                    </Tooltip>
+                )
+~~~
+
 # 获取当前登陆用户
 
 ~~~js
